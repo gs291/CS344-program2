@@ -13,6 +13,7 @@ struct room {
 };
 
 struct room rooms[7];
+char dirRooms[] = "sanchegr.rooms.";
 int start;
 
 /*
@@ -20,7 +21,6 @@ int start;
  * Description: initialize a room directory with the PID number attached to the end (e.g. /sanchegr.rooms.99999)
  */
 void init_room_dir() {
-	char dirRooms[] = "sanchegr.rooms.";
 	char pid[10];
 	
 	sprintf(pid, "%d", (int)getpid());
@@ -101,11 +101,16 @@ void init_rooms() {
 }
 
 void init_room_files () {
+	ssize_t nwritten;
 	int file_descriptor, i, j;
-	char file[12];	
+	char file[30], text[30], buffer[3];
+
 	for(i =0; i < 7; i++) {
-		strcpy(file, rooms[i].room_name);
+		strcpy(file, dirRooms);
+		strcat(file, "/");
+		strcat(file, rooms[i].room_name);
 		strcat(file, "_room");
+		printf("file: %s\n", file);
 		file_descriptor = open(file, O_WRONLY | O_CREAT, 0600);
 
 		if(file_descriptor < 0) {
@@ -113,8 +118,22 @@ void init_room_files () {
 			perror("Error in init_room_files()");
 			exit(1);
 		}
+
+		strcpy(text, "ROOM NAME: ");
+		strcat(text, rooms[i].room_name);
+		strcat(text, "\n");
+		nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
 		for(j=0; j < rooms[i].room_num_connection; j++) {
+			sprintf(buffer, "%d", j);
+			strcpy(text, "CONNECTION "); strcat(text, buffer); strcat(text, ": ");
+			strcat(text, rooms[i].room_connections[j]);
+			strcat(text, "\n");
+			nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
 		}
+		strcpy(text, "ROOM TYPE: ");
+		strcat(text, rooms[i].room_type);
+		strcat(text, "\n");
+		nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
 		close(file_descriptor);
 	}
 
@@ -123,6 +142,7 @@ void init_room_files () {
 void main () {
 	srand(time(0));
 	init_rooms();	
+	init_room_dir();
 	init_room_files();
 	int i,j;
 	for(i =0; i < 7; i++) {
