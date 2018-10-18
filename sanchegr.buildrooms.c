@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -13,6 +14,7 @@ struct room {
 
 struct room rooms[7];
 int start;
+
 /*
  * Name: init_room_dir
  * Description: initialize a room directory with the PID number attached to the end (e.g. /sanchegr.rooms.99999)
@@ -98,10 +100,30 @@ void init_rooms() {
 	strcpy(rooms[start].room_type, types[0]);
 }
 
+void init_room_files () {
+	int file_descriptor, i, j;
+	char file[12];	
+	for(i =0; i < 7; i++) {
+		strcpy(file, rooms[i].room_name);
+		strcat(file, "_room");
+		file_descriptor = open(file, O_WRONLY | O_CREAT, 0600);
+
+		if(file_descriptor < 0) {
+			fprintf(stderr, "Could not open file %s\n", file);
+			perror("Error in init_room_files()");
+			exit(1);
+		}
+		for(j=0; j < rooms[i].room_num_connection; j++) {
+		}
+		close(file_descriptor);
+	}
+
+}
+
 void main () {
 	srand(time(0));
 	init_rooms();	
-
+	init_room_files();
 	int i,j;
 	for(i =0; i < 7; i++) {
 		printf("ROOM NAME: %s\n", rooms[i].room_name);
