@@ -144,15 +144,4 @@ void main () {
 	init_rooms();	
 	init_room_dir();
 	init_room_files();
-	int i,j;
-	for(i =0; i < 7; i++) {
-		printf("ROOM NAME: %s\n", rooms[i].room_name);
-		for(j=0; j < rooms[i].room_num_connection; j++) {
-			printf("CONNECTION: %s\n", rooms[i].room_connections[j]);
-		}
-		printf("ROOM TYPE: %s\n", rooms[i].room_type);
-		printf("---\n");	
-	}
-	
-
 }
