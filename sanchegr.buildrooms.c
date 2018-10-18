@@ -54,18 +54,14 @@ void init_room_connection(const char *names[]) {
 	srand(time(0));
 	int i, rand_room;
 	for(i=0; i < 7; i++) {
-		/*printf("Room name %s: %s, and NumOfC: %d\n", rooms[i].room_type,  rooms[i].room_name, rooms[i].room_num_connection);	
-		*/int num_of_connec = rooms[i].room_num_connection;
+		int num_of_connec = rooms[i].room_num_connection;
 		for(num_of_connec; num_of_connec < (rand() % (6-3+1) + 3); num_of_connec++) {
 			rand_room = rand() % 7;
 			if(contains_connection(i, names[rand_room]) == 0){
-				/*printf("BEFORE; %s and %s; RAND: %s and %s\n", rooms[i].room_name, rooms[i].room_type, rooms[rand_room].room_name, rooms[rand_room].room_type);
-				*/strcpy(rooms[i].room_connections[rooms[i].room_num_connection], names[rand_room]);
+				strcpy(rooms[i].room_connections[rooms[i].room_num_connection], names[rand_room]);
 				strcpy(rooms[rand_room].room_connections[rooms[rand_room].room_num_connection], rooms[i].room_name);
 				rooms[i].room_num_connection++;
 				rooms[rand_room].room_num_connection++;
-			/*printf("BEFORE; %s and %s; RAND: %s and %s\n", rooms[i].room_name, rooms[i].room_type, rooms[rand_room].room_name, rooms[rand_room].room_type);
-			*/	
 			}
 			else
 				num_of_connec--;
