@@ -12,7 +12,7 @@ struct room {
 };
 
 struct room rooms[7];
-
+int start;
 /*
  * Name: init_room_dir
  * Description: initialize a room directory with the PID number attached to the end (e.g. /sanchegr.rooms.99999)
@@ -59,10 +59,13 @@ void init_room_connection(const char *names[]) {
 		for(num_of_connec; num_of_connec < (rand() % (6-3+1) + 3); num_of_connec++) {
 			rand_room = rand() % 7;
 			if(contains_connection(i, names[rand_room]) == 0){
-				strcpy(rooms[i].room_connections[rooms[i].room_num_connection], names[rand_room]);
+				/*printf("BEFORE; %s and %s; RAND: %s and %s\n", rooms[i].room_name, rooms[i].room_type, rooms[rand_room].room_name, rooms[rand_room].room_type);
+				*/strcpy(rooms[i].room_connections[rooms[i].room_num_connection], names[rand_room]);
 				strcpy(rooms[rand_room].room_connections[rooms[rand_room].room_num_connection], rooms[i].room_name);
 				rooms[i].room_num_connection++;
 				rooms[rand_room].room_num_connection++;
+			/*printf("BEFORE; %s and %s; RAND: %s and %s\n", rooms[i].room_name, rooms[i].room_type, rooms[rand_room].room_name, rooms[rand_room].room_type);
+			*/	
 			}
 			else
 				num_of_connec--;
@@ -77,7 +80,7 @@ void init_room_connection(const char *names[]) {
 void init_rooms() {
 	const char *names[] = {"Keep", "Plaza", "Dungeon", "Cave", "Hallway", "Vault", "Mine"};
 	const char *types[] = {"START_ROOM", "END_ROOM", "MID_ROOM"};
-	int i, start, final;
+	int i, final;
 	
 	do {
 		start = rand() % 7;
@@ -96,12 +99,12 @@ void init_rooms() {
 		}
 	}
 	init_room_connection(names);	
+	strcpy(rooms[start].room_type, types[0]);
 }
 
 void main () {
 	srand(time(0));
 	init_rooms();	
-
 
 	int i,j;
 	for(i =0; i < 7; i++) {
