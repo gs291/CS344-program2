@@ -57,6 +57,11 @@ void init_room_connection(const char *names[]) {
 	int i, rand_room;
 	for(i=0; i < 7; i++) {
 		int num_of_connec = rooms[i].room_num_connection;
+		/* 
+ 		 * Loop through the current rooms connections array until a random number from 3 to 6
+ 		 * If a random room is not already in the connections array, add it to the current room and the random room
+ 		 * else keep looking for a random room until the random number is reached
+ 		 */
 		for(num_of_connec; num_of_connec < (rand() % (6-3+1) + 3); num_of_connec++) {
 			rand_room = rand() % 7;
 			if(contains_connection(i, names[rand_room]) == 0){
@@ -80,6 +85,8 @@ void init_rooms() {
 	const char *types[] = {"START_ROOM", "END_ROOM", "MID_ROOM"};
 	int i, final;
 	
+
+	/* Find a start and ending room and assign their room types to it as long as the rooms are not equal */
 	do {
 		start = rand() % 7;
 		final = rand() % 7;
@@ -89,6 +96,7 @@ void init_rooms() {
 		}
 	} while (start == final);
 
+	/* Inizialize each room with a name, and number of connections. Also, assign the middle rooms to the other rooms */
 	for(i=0; i < 7; i++) {
 		rooms[i].room_num_connection=0;
 		strcpy(rooms[i].room_name, names[i]);
@@ -105,12 +113,13 @@ void init_room_files () {
 	int file_descriptor, i, j;
 	char file[30], text[30], buffer[3];
 
+	/* Open a file and write to a file for every room */
 	for(i =0; i < 7; i++) {
+		/* Makes a file path for each room with the form "sanchegr.rooms.$$PID$$/Test_room" */
 		strcpy(file, dirRooms);
 		strcat(file, "/");
 		strcat(file, rooms[i].room_name);
 		strcat(file, "_room");
-		printf("file: %s\n", file);
 		file_descriptor = open(file, O_WRONLY | O_CREAT, 0600);
 
 		if(file_descriptor < 0) {
@@ -119,10 +128,12 @@ void init_room_files () {
 			exit(1);
 		}
 
+		/*For every room create each line using the variable text, and write it to the file */
 		strcpy(text, "ROOM NAME: ");
 		strcat(text, rooms[i].room_name);
 		strcat(text, "\n");
 		nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
+		/*Loop through each connection and write each one to the file. */
 		for(j=0; j < rooms[i].room_num_connection; j++) {
 			sprintf(buffer, "%d", j);
 			strcpy(text, "CONNECTION "); strcat(text, buffer); strcat(text, ": ");
