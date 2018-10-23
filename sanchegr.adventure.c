@@ -23,7 +23,7 @@ char startPath[64];
 char endPath[64];
 
 
-void* cur_Time(void* arg) {
+void* cur_time(void* arg) {
 	FILE* fp;
 	time_t curTime;
 	struct tm *timeinfo;
@@ -33,8 +33,9 @@ void* cur_Time(void* arg) {
 	timeinfo = localtime(&curTime);
 	strftime(buffer, 200, "%I:%M%p, %A, %B %d, %Y", timeinfo);
 	
+	printf("MADE IT IN HERE\n");
 	fp = fopen("currentTime.txt", "w");
-	fprintf(fp, "%s", outstr);
+	fprintf(fp, "%s", buffer);
 	fclose(fp);
 	return NULL;
 }
@@ -188,6 +189,18 @@ void play_game() {
 	int finalCount=0;
 	char userChoice[256];
 	int i = 0;
+
+	pthread_t timeThread;
+	int resultCode;
+	
+	resultCode = pthread_create(&timeThread, NULL, &cur_time, NULL);
+
+	if(resultCode != 0)
+		printf("THREAD can't be created : %s\n", strerror(resultCode));
+	else {
+		resultCode = pthread_join(timeThread, NULL);
+		printf("Result: %d\n", resultCode);
+	}
 	get_room(curPath);
 	memset(finalPath, '\0', sizeof(finalPath));
 	while(strcmp(curPath, endPath) != 0) {
@@ -230,5 +243,5 @@ void play_game() {
 void main () {
 	get_recent_directory();
 	get_start_final_room();
-	/*play_game();*/
+	play_game();
 }
