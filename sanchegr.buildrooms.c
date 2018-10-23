@@ -54,6 +54,7 @@ int contains_connection(const int room_index, const char *room) {
 void init_room_connection(const char *names[]) {
 	srand(time(0));
 	int i, rand_room;
+	int j;
 	for(i=0; i < 7; i++) {
 		int num_of_connec = rooms[i].room_num_connection;
 		/* 
@@ -64,6 +65,8 @@ void init_room_connection(const char *names[]) {
 		for(num_of_connec; num_of_connec < (rand() % (6-3+1) + 3); num_of_connec++) {
 			rand_room = rand() % 7;
 			if(contains_connection(i, names[rand_room]) == 0){
+				memset(rooms[i].room_connections[rooms[i].room_num_connection], '\0', sizeof(rooms[i].room_connections[rooms[i].room_num_connection]));
+				memset(rooms[rand_room].room_connections[rooms[rand_room].room_num_connection], '\0', sizeof(rooms[rand_room].room_connections[rooms[rand_room].room_num_connection]));
 				strcpy(rooms[i].room_connections[rooms[i].room_num_connection], names[rand_room]);
 				strcpy(rooms[rand_room].room_connections[rooms[rand_room].room_num_connection], rooms[i].room_name);
 				rooms[i].room_num_connection++;
@@ -73,7 +76,6 @@ void init_room_connection(const char *names[]) {
 				num_of_connec--;
 		}
 	}
-
 }
 /*
  * Name: init_rooms
@@ -83,28 +85,30 @@ void init_rooms() {
 	const char *names[] = {"Keep", "Plaza", "Dungeon", "Cave", "Hallway", "Vault", "Mine"};
 	const char *types[] = {"START_ROOM", "END_ROOM", "MID_ROOM"};
 	int i, final;
-	
-
 	/* Find a start and ending room and assign their room types to it as long as the rooms are not equal */
 	do {
 		start = rand() % 7;
 		final = rand() % 7;
 		if (start != final) {
-			strcpy(rooms[start].room_type, types[0]);
-			strcpy(rooms[final].room_type, types[1]);
+			memset(rooms[start].room_type, '\0', sizeof(rooms[start].room_type));
+			memset(rooms[final].room_type, '\0', sizeof(rooms[final].room_type));
+
+			strcpy(rooms[start].room_type, "START_ROOM");
+			strcpy(rooms[final].room_type, "END_ROOM");
 		}
 	} while (start == final);
 
 	/* Inizialize each room with a name, and number of connections. Also, assign the middle rooms to the other rooms */
 	for(i=0; i < 7; i++) {
 		rooms[i].room_num_connection=0;
+		memset(rooms[i].room_name, '\0', sizeof(rooms[i].room_name));
 		strcpy(rooms[i].room_name, names[i]);
 		if(rooms[i].room_type[0] == '\0') {
+			memset(rooms[i].room_type, '\0', sizeof(rooms[i].room_type));
 			strcpy(rooms[i].room_type, types[2]);
 		}
 	}
-	init_room_connection(names);	
-	strcpy(rooms[start].room_type, types[0]);
+	init_room_connection(names);
 }
 
 void init_room_files () {
@@ -115,6 +119,7 @@ void init_room_files () {
 	/* Open a file and write to a file for every room */
 	for(i =0; i < 7; i++) {
 		/* Makes a file path for each room with the form "sanchegr.rooms.$$PID$$/Test_room" */
+		memset(file, '\0', sizeof(file)); memset(text, '\0', sizeof(text)); memset(buffer, '\0', sizeof(buffer));
 		strcpy(file, dirRooms);
 		strcat(file, "/");
 		strcat(file, rooms[i].room_name);
@@ -141,7 +146,11 @@ void init_room_files () {
 			nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
 		}
 		strcpy(text, "ROOM TYPE: ");
-		strcat(text, rooms[i].room_type);
+		if(strstr(rooms[i].room_type, "START_ROOM")) {
+			strcat(text, "START_ROOM");
+		} else {
+			strcat(text, rooms[i].room_type);
+		}
 		strcat(text, "\n");
 		nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
 		close(file_descriptor);
