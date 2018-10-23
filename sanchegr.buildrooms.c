@@ -85,7 +85,7 @@ void init_rooms() {
 	const char *names[] = {"Keep", "Plaza", "Dungeon", "Cave", "Hallway", "Vault", "Mine"};
 	const char *types[] = {"START_ROOM", "END_ROOM", "MID_ROOM"};
 	int i, final;
-	/* Find a start and ending room and assign their room types to it as long as the rooms are not equal */
+	/* Find a random start and ending room and assign their room types to it as long as the rooms are not equal */
 	do {
 		start = rand() % 7;
 		final = rand() % 7;
@@ -111,6 +111,10 @@ void init_rooms() {
 	init_room_connection(names);
 }
 
+/*
+ * Name: init_room_files
+ * Description: Create every room's file and store it into the pid rooms directory
+ */
 void init_room_files () {
 	ssize_t nwritten;
 	int file_descriptor, i, j;
@@ -139,7 +143,7 @@ void init_room_files () {
 		nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
 		/*Loop through each connection and write each one to the file. */
 		for(j=0; j < rooms[i].room_num_connection; j++) {
-			sprintf(buffer, "%d", j);
+			sprintf(buffer, "%d", j+1);
 			strcpy(text, "CONNECTION "); strcat(text, buffer); strcat(text, ": ");
 			strcat(text, rooms[i].room_connections[j]);
 			strcat(text, "\n");
