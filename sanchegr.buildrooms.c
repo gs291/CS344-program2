@@ -6,7 +6,7 @@
 
 struct room {
 	char room_name[8];
-	char room_type[10];
+	char room_type[11];
 	char room_connections[6][8];
 	int room_num_connection;
 };
@@ -146,11 +146,7 @@ void init_room_files () {
 			nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
 		}
 		strcpy(text, "ROOM TYPE: ");
-		if(strstr(rooms[i].room_type, "START_ROOM")) {
-			strcat(text, "START_ROOM");
-		} else {
-			strcat(text, rooms[i].room_type);
-		}
+		strcat(text, rooms[i].room_type);
 		strcat(text, "\n");
 		nwritten = write(file_descriptor, text, strlen(text) * sizeof(char));
 		close(file_descriptor);
