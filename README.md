@@ -1,7 +1,7 @@
 # CS344-program2
 This assignment asks you to write a simple game akin to old text adventure games like Adventure:
 
-[http://en.wikipedia.org/wiki/Colossal_Cave_Adventure] (http://en.wikipedia.org/wiki/Colossal_Cave_Adventure)
+[http://en.wikipedia.org/wiki/Colossal_Cave_Adventure](http://en.wikipedia.org/wiki/Colossal_Cave_Adventure)
 
 You'll write two programs that will introduce you to programming in C on UNIX based systems, and will get you familiar with reading and writing files. 
 
