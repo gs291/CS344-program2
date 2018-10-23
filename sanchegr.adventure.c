@@ -225,7 +225,7 @@ void play_game() {
 	char finalPath[1024];
 	int finalCount=0;
 	char userChoice[256];
-	int i = 0;
+	int i = 0, print_all=1;
 
 	pthread_t timeThread;
 	int resultCode;
@@ -242,18 +242,26 @@ void play_game() {
 	get_room(curPath);
 	memset(finalPath, '\0', sizeof(finalPath));
 
+
+	/*===========================ACUTAL GAME=============================*/
 	/*Make an infinite loop to play the game until the user finds the end room*/
 	while(strcmp(curPath, endPath) != 0) {
 		
 		/* Give a prompt for the user. Showing current room lcation, what rooms are connected, and where the user wants to go*/
-		printf("CURRENT LOCATION: %s\n", curRoom.room_name);
-		printf("POSSIBLE CONNECTIONS: ");
-		for(i = 0; i < curRoom.room_num_connection; i++) {
-			printf("%s", curRoom.room_connections[i]);
-			if( (i+1) < curRoom.room_num_connection) { printf(", "); } 
-			else { printf("."); }
+		if(print_all == 1) {
+			printf("CURRENT LOCATION: %s\n", curRoom.room_name);
+			printf("POSSIBLE CONNECTIONS: ");
+			for(i = 0; i < curRoom.room_num_connection; i++) {
+				printf("%s", curRoom.room_connections[i]);
+				if( (i+1) < curRoom.room_num_connection) { printf(", "); } 
+				else { printf("."); }
+			}
+			printf("\nWHERE TO? >");
+		} /*If the user previously selected "time", only ask where to go*/ 
+		else if (print_all == 0) {
+			print_all=1;
+			printf("WHERE TO? >");
 		}
-		printf("\nWHERE TO? >");
 		memset(userChoice, '\0', sizeof(userChoice));
 
 		/*Get the user input, and pick what to do with it*/
@@ -266,7 +274,8 @@ void play_game() {
 				char *k = strchr(userChoice, '\n'); 
 				*k=0;
 			}
-
+	
+			/*============================VALID ROOM SELECTION===========================*/
 			/*If the user picked a room connected to the current room or wants to see the time*/
 			if(valid_room_selection(userChoice) == 1) {
 
@@ -279,8 +288,10 @@ void play_game() {
 				strcpy(curPath, dirPath); strcat(curPath, "/"); strcat(curPath, userChoice); strcat(curPath, "_room");
 				get_room(curPath);	
 
-			} else if (strcmp(userChoice, "time")==0){
-
+			} /*===========================TIME SELECTION================================*/ 
+			else if (strcmp(userChoice, "time")==0){
+				print_all=0;
+	
 				/*Unlock the mutex thread, run the time thread, lock the mutex thread, and create the new time thread*/
 				pthread_mutex_unlock(&lock);
 				resultCode = pthread_join(timeThread, NULL);
@@ -301,7 +312,7 @@ void play_game() {
 				if(fgets(buffer, 64, fp) != NULL) {
 					printf("\n%s\n\n", buffer);
 				}
-			} else { /*The user did not input a valid choice*/
+			} else { /*========================INVALID SELECTION=================*/
 				printf("\nHUH? I DON'T UNDERSTAND THAT ROOM. TRY AGAIN.\n\n");
 			
 			}
