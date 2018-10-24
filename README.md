@@ -89,7 +89,7 @@ $
 ```
 ## The Game
 
-Now let’s describe what should be presented to the player in the game. Once the rooms program has been run, which generates the room files, the game program can then be run. This program should present an interface to the player. Note that the room data must be read back into the program from the previously-generated room files, for use by the game. Since the rooms program may have been run multiple times before executing the game, your game should use the most recently created files: perform a [stat() function call](https://linux.die.net/man/2/stat). on rooms directories in the same directory as the game, and open the one with most recent st_mtime component of the returned stat struct.
+Now let’s describe what should be presented to the player in the game. Once the rooms program has been run, which generates the room files, the game program can then be run. This program should present an interface to the player. Note that the room data must be read back into the program from the previously-generated room files, for use by the game. Since the rooms program may have been run multiple times before executing the game, your game should use the most recently created files: perform a [`stat()` function call](https://linux.die.net/man/2/stat). on rooms directories in the same directory as the game, and open the one with most recent `st_mtime` component of the returned `stat` struct.
 
 This player interface should list where the player current is, and list the possible connections that can be followed. It should also then have a prompt. Here is the form that must be used:
 ```sh
@@ -193,3 +193,5 @@ CONNECTION 2: Dungeon
 CONNECTION 3: twisty
 ROOM TYPE: START_ROOM
 ```
+---
+Taken from the assignment Program 2 - adventure on Canvas for CS344 Fall Term 2018
